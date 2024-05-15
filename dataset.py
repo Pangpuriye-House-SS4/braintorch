@@ -133,7 +133,10 @@ class SignalDataset(Dataset):
     ) -> Tuple[np.ndarray, np.ndarray]:
         all_signals = []
 
-        for channel in signals.T:
+        for i, channel in enumerate(signals.T):
+            if i == len(signals.T) - 1:
+                all_signals.append(channel)
+                continue
             # Apply baseline correction if provided.
             if baseline != None:
                 channel -= baseline(channel)
