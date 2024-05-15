@@ -52,12 +52,14 @@ class SignalDataset(Dataset):
         filter_function: Optional[SIGNAL_OPERATION] = None,
         max_range: int = 1750,
         acceptable_loss_sample: int = 15,
+        tans_segment_theory: int = 0,
     ):
         self.training_data_path = training_data_path
         self.baseline_correction = baseline_correction
         self.filter_function = filter_function
         self.acceptable_loss_sample = acceptable_loss_sample
         self.max_range = max_range
+        self.tans_segment_theory = tans_segment_theory
 
         # Get all the data paths.
         data_path = self.get_data(self.training_data_path)
@@ -149,7 +151,12 @@ class SignalDataset(Dataset):
         all_signals = np.array(all_signals).T
         slices = []
 
-        for label_time in label_times:
+        for i, label_time in enumerate(label_times):
+            # Skip the first few segments.
+            # To avoid fuctuation in the signal.
+            if i < self.tans_segment_theory:
+                continue
+
             start_index = np.abs(label_time - signal_times).argmin()
             signal = all_signals[start_index : start_index + self.max_range]
 
