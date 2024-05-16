@@ -22,7 +22,7 @@ def kurtosis(data: np.ndarray):
     return ((data - np.mean(data)) ** 4).mean() / ((data - np.mean(data)) ** 2).mean() ** 2
 
 
-def process_segment(segments: np.ndarray, l_freq: int = 3, h_freq: int = 40, SFreq: int = 250):
+def process_segment(segments: np.ndarray, l_freq: int = 7, h_freq: int = 30, SFreq: int = 250):
     segments_list = []
     for channel in range(segments.shape[1]):
         segment = segments[:, channel].astype(np.float64)
