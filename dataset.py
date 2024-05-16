@@ -6,7 +6,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-from utils import is_outlier, kurtosis_ica_method
+from .utils import is_outlier, kurtosis_ica_method
 
 SIGNAL_OPERATION = Callable[[np.ndarray], np.ndarray]
 
