@@ -6,6 +6,8 @@ import numpy as np
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
+from utils import is_outlier, kurtosis_ica_method
+
 SIGNAL_OPERATION = Callable[[np.ndarray], np.ndarray]
 
 
@@ -53,6 +55,8 @@ class SignalDataset(Dataset):
         max_range: int = 1750,
         acceptable_loss_sample: int = 15,
         tans_segment_theory: int = 0,
+        apply_ica: bool = False,
+        n_channels: int = 8,
     ):
         self.training_data_path = training_data_path
         self.baseline_correction = baseline_correction
@@ -60,6 +64,8 @@ class SignalDataset(Dataset):
         self.acceptable_loss_sample = acceptable_loss_sample
         self.max_range = max_range
         self.tans_segment_theory = tans_segment_theory
+        self.apply_ica = apply_ica
+        self.n_channels = n_channels
 
         # Get all the data paths.
         data_path = self.get_data(self.training_data_path)
@@ -166,6 +172,12 @@ class SignalDataset(Dataset):
             # Remove the signal if it has more than acceptable loss sample.
             if len(np.where(signal[:, -1] == 0)[0]) > self.acceptable_loss_sample:
                 continue
+
+            signal = signal[:, : self.n_channels]
+            if self.apply_ica:
+                signal = kurtosis_ica_method(signal)
+                if is_outlier(signal):
+                    continue
 
             slices.append(signal)
 

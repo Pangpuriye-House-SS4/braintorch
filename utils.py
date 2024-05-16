@@ -3,6 +3,7 @@ import warnings
 import mne
 import numpy as np
 from pybaselines import Baseline
+from scipy import stats
 from sklearn.decomposition import FastICA
 from sklearn.exceptions import ConvergenceWarning
 
@@ -59,3 +60,10 @@ def kurtosis_ica_method(segments: np.ndarray, n_components: int = 8, kurtosis_cu
     # Reconstruct EEG without blinks
     restored = ica.inverse_transform(components)
     return restored
+
+
+def is_outlier(segment: np.ndarray):
+    condition1 = stats.kurtosis(segment) > 4 * np.std(segment)
+    condition2 = (abs(segment - np.mean(segment)) > 125).any()
+
+    return condition1 or condition2
