@@ -1,11 +1,11 @@
 # Braintorch
 
-- release: 0.4
+- release: 1.0
 
 
 ## Usage
 ```py
-from braintorch.dataset import SignalDataset, SignalTestDataset
+from braintorch.dataset import SignalDataset, RawSignalDataset
 
 dataset = SignalDataset("dataset/train/train")
 
@@ -34,17 +34,20 @@ clean_signal = kurtosis_ica_method(raw_signal)
 ```py
 from braintorch.dataset import SignalDataset, SignalTestDataset
 from braintorch.utils import baseline_snip, kurtosis_ica_method
+from braintorch.vis import visualtize_signals
 
 dataset = SignalDataset(
     "train/train",
     baseline_snip,
     tans_segment_theory=2,
-    acceptable_loss_sample=87
+    acceptable_loss_sample=87,
+    apply_ica=True,
 )
 for segments, label in dataset:
-    segments = kurtosis_ica_method(segments[:, :8])
-    for channel in range(8):
-        segment = segments[:, channel]
-        print(segment.shape, label)
+    visualtize_signals(
+        segments, 
+        distance= 20, 
+        figsize=(12, 26)
+    )
     break
 ```

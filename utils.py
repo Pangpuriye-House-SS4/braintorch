@@ -35,8 +35,8 @@ def process_segment(segments: np.ndarray, l_freq: int = 7, h_freq: int = 30, SFr
     return segments_array.T
 
 
-def kurtosis_ica_method(segments: np.ndarray, n_components: int = 8, kurtosis_cutout: float = 8.5):
-    eeg = process_segment(segments)
+def kurtosis_ica_method(segments: np.ndarray, n_components: int = 8, kurtosis_cutout: float = 8.5, **kwargs):
+    eeg = process_segment(segments, **kwargs)
     # decompose EEG and plot components
     ica = FastICA(
         n_components=n_components,

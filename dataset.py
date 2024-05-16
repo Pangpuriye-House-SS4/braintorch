@@ -1,5 +1,6 @@
 import os
 import re
+import warnings
 from typing import Callable, List, Optional, Tuple
 
 import numpy as np
@@ -18,6 +19,7 @@ class SignalTestDataset(Dataset):
         baseline_correction: Optional[SIGNAL_OPERATION] = None,
         filter_function: Optional[SIGNAL_OPERATION] = None,
     ):
+        warnings.warn("This class is deprecated, use RawSignalDataset instead.", DeprecationWarning)
         self.test_data_path = test_data_path
         self.baseline_correction = baseline_correction
         self.filter_function = filter_function
@@ -36,6 +38,48 @@ class SignalTestDataset(Dataset):
             # Apply filter function if provided.
             if filter_function != None:
                 segment = filter_function(segment)
+
+            self.signals.append(segment)
+
+    def __len__(self) -> int:
+        return len(self.signals)
+
+    def __getitem__(self, idx) -> np.ndarray:
+        return self.signals[idx]
+
+
+class RawSignalDataset(Dataset):
+    def __init__(
+        self,
+        data_path: str,
+        baseline_correction: Optional[SIGNAL_OPERATION] = None,
+        filter_function: Optional[SIGNAL_OPERATION] = None,
+        apply_ica: bool = False,
+        n_channels: int = 8,
+    ):
+        self.data_path = data_path
+        self.baseline_correction = baseline_correction
+        self.filter_function = filter_function
+
+        data_path = os.listdir(self.data_path)
+        self.signals = []
+
+        # Load all the signals.
+        for path in tqdm(data_path):
+            path = os.path.join(self.data_path, path)
+
+            segment = np.load(path)
+            # Apply baseline correction if provided.
+            if baseline_correction != None:
+                segment -= baseline_correction(segment)
+            # Apply filter function if provided.
+            if filter_function != None:
+                segment = filter_function(segment)
+
+            segment = segment[:, :n_channels]
+            # Apply ICA if provided.
+            if apply_ica:
+                segment = kurtosis_ica_method(segment)
 
             self.signals.append(segment)
 
