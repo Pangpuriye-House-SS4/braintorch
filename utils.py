@@ -66,4 +66,4 @@ def is_outlier(segment: np.ndarray):
     condition1 = stats.kurtosis(segment) > 4 * np.std(segment)
     condition2 = (abs(segment - np.mean(segment)) > 125).any()
 
-    return condition1 or condition2
+    return bool(condition1 or condition2)

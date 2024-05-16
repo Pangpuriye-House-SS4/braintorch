@@ -218,12 +218,17 @@ class SignalDataset(Dataset):
                 continue
 
             signal = signal[:, : self.n_channels]
-            if self.apply_ica:
-                signal = kurtosis_ica_method(signal)
-                if is_outlier(signal):
-                    continue
+            if not self.apply_ica:
+                slices.append(signal)
+                continue
 
-            slices.append(signal)
+            signal = kurtosis_ica_method(signal)
+            for channel in range(signal.shape[1]):
+                # Remove the signal if it detected as outlier.
+                if is_outlier(channel):
+                    break
+            else:
+                slices.append(signal)
 
         return tuple(zip(slices, labels))
 
