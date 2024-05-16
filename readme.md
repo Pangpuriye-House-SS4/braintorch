@@ -25,7 +25,26 @@ print(signal.shape)
 
 For ICA, use the following code:
 ```py
-from braintorch.utils import process_segment, kurtosis_ica_method
-clean_signal = process_segment(raw_signal, kurtosis_ica_method)
-clean_signal = kurtosis_ica_method(clean_signal)
+from braintorch.utils import kurtosis_ica_method
+clean_signal = kurtosis_ica_method(raw_signal)
+```
+
+
+## Example
+```py
+from braintorch.dataset import SignalDataset, SignalTestDataset
+from braintorch.utils import baseline_snip, kurtosis_ica_method
+
+dataset = SignalDataset(
+    "train/train",
+    baseline_snip,
+    tans_segment_theory=2,
+    acceptable_loss_sample=87
+)
+for segments, label in dataset:
+    segments = kurtosis_ica_method(segments[:, :8])
+    for channel in range(8):
+        segment = segments[:, channel]
+        print(segment.shape, label)
+    break
 ```
