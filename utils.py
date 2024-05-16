@@ -22,7 +22,7 @@ def kurtosis(data: np.ndarray):
     return ((data - np.mean(data)) ** 4).mean() / ((data - np.mean(data)) ** 2).mean() ** 2
 
 
-def process_segment(segments: np.ndarray, l_freq: int = 7, h_freq: int = 30, SFreq: int = 250):
+def process_segment(segments: np.ndarray, l_freq: int = 3, h_freq: int = 40, SFreq: int = 250):
     segments_list = []
     for channel in range(segments.shape[1]):
         segment = segments[:, channel].astype(np.float64)
@@ -63,7 +63,7 @@ def kurtosis_ica_method(segments: np.ndarray, n_components: int = 8, kurtosis_cu
 
 
 def is_outlier(segment: np.ndarray):
-    condition1 = stats.kurtosis(segment) > 4 * np.std(segment)
-    condition2 = (abs(segment - np.mean(segment)) > 125).any()
+    condition1 = stats.kurtosis(segment) > 3.4 * np.std(segment)
+    condition2 = (abs(segment - np.mean(segment)) > 120).any()
 
     return bool(condition1 or condition2)
